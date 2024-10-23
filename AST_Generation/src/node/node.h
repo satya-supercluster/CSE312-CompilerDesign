@@ -4,14 +4,12 @@
 #include <bits/stdc++.h>
 class Node
 {
-private:
+public:
     int id;
     int lineno;
     std::string title, lexval;
     Node *parent;
     std::deque<Node *> child;
-
-public:
     Node();
     Node(int id, const std::string &title, int lineno);
     Node(int id, const std::string &title, int lineno, const std::string &lexval);

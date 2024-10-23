@@ -1,8 +1,8 @@
 # makefile
 all: parser
 
-parser: parser.o lex.o node.o
-	g++ -o parser parser.o lex.o node.o -ll
+parser: parser.o lex.o node/node.o
+	g++ -o parser parser.o lex.o node/node.o -ll
 
 parser.o: parser.tab.c
 	g++ -o parser.o -c parser.tab.c
@@ -16,8 +16,8 @@ lex.o: lex.yy.c
 lex.yy.c: lexer.l
 	flex lexer.l
 
-node.o: node.cpp node.h
-	g++ -o node.o -c node.cpp
+node/node.o: node/node.cpp node/node.h
+	g++ -o node/node.o -c node/node.cpp
 
 clean:
 	rm -f *.o parser parser.tab.c parser.tab.h lex.yy.c

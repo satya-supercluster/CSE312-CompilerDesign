@@ -18,19 +18,16 @@
     Node *node;
 }
 
-// tokens -> Terminals
 
 %token<node>  BREAK CONTINUE RETURN GLOBAL NONLOCAL ASSERT CLASS DEF IF ELIF ELSE WHILE FOR IN NONE TRUE FALSE OR AND NOT IS ASYNC INDENT DEDENT
-
 %token<node> LEFT_PAREN RIGHT_PAREN LEFT_BRACKET RIGHT_BRACKET ARROW SEMICOLON COLON EQUAL PLUS_EQUAL MINUS_EQUAL MULTIPLY_EQUAL RATE_EQUAL DIVIDE_EQUAL REMAINDER_EQUAL BITWISE_AND_EQUAL BITWISE_OR_EQUAL BITWISE_XOR_EQUAL LEFT_SHIFT_EQUAL RIGHT_SHIFT_EQUAL POWER_EQUAL INTEGER_DIVIDE INTEGER_DIVIDE_EQUAL COMMA PERIOD  MULTIPLY RATE DIVIDE POWER BITWISE_OR PLUS MINUS EQUAL_EQUAL NOT_EQUAL LESS_THAN_EQUAL LESS_THAN GREATER_THAN_EQUAL GREATER_THAN BITWISE_AND BITWISE_XOR REMAINDER BITWISE_NOT
 %token<node> NUMBER NEWLINE NAME STRING_LITERAL LEFT_SHIFT RIGHT_SIHFT 
 
 
-// types -> Variables
 %type<node> file_input NEWLINE_or_stmt funcdef  ARROW_test_or_not parameters typedargslist_or_not typedargslist tfpdef COMMA_tfpdef_EQUAL_test_or_not_kleene COLON_test_or_not COMMA_or_not EQUAL_test_or_not stmt simple_stmt SEMICOLON_small_stmt_kleene small_stmt expr_stmt EQUAL_testlist_star_expr_kleene annassign SEMICOLON_or_not testlist_star_expr test_or_star_expr augassign flow_stmt break_stmt continue_stmt return_stmt testlist_or_not global_stmt nonlocal_stmt assert_stmt COMMA_test_or_not compound_stmt if_stmt ELIF_test_COLON_suite_kleene while_stmt for_stmt ELSE_COLON_suite_or_not suite stmt_plus test IF_or_test_ELSE_test_or_not test_nocond or_test and_test not_test comparison comp_op star_expr expr xor_expr and_expr shift_expr LEFT_SHIFT_or_RIGHT_SIHFT arith_expr PLUS_or_MINUS term MULTIPLY_or_RATE_or_DIVIDE_or_REMAINDER_or_INTEGER_DIVIDE factor PLUS_or_MINUS_or_BITWISE_NOT power POWER_factor_or_not atom_expr atom STRING_plus testlist_comp COMMA_test_or_star_expr_kleene testlist_comp_or_not trailer subscriptlist COMMA_subscript_kleene subscript exprlist COMMA_expr_or_star_expr_kleene expr_or_star_expr testlist COMMA_test_kleene classdef LEFT_PAREN_arglist_or_not_RIGHT_PAREN_or_not arglist_or_not arglist COMMA_argument_kleene argument comp_for_or_not comp_iter comp_for comp_if comp_iter_or_not ASYNC_or_not file_input_final 
 
 
-// Grammar
+
 %%
 
 
@@ -41,7 +38,7 @@ file_input_final    : file_input {
 
 file_input  : file_input NEWLINE_or_stmt   {
 
-                $1->add_child_back($2);
+                $1->push_back($2);
                 $$ = $1;
 }
             |  %empty {
@@ -57,19 +54,19 @@ NEWLINE_or_stmt : NEWLINE { $$ = NULL; }
 
 funcdef : DEF NAME parameters ARROW_test_or_not COLON suite {
                 $$ = new Node(nodeID++,"funcdef", yylineno);
-                $$->add_child_back($1);
-                $$->add_child_back($2);
-                $$->add_child_back($3);
-                $$->add_child_back($4);
-                $$->add_child_back($5);
-                $$->add_child_back($6);
+                $$->push_back($1);
+                $$->push_back($2);
+                $$->push_back($3);
+                $$->push_back($4);
+                $$->push_back($5);
+                $$->push_back($6);
 }
 
 ARROW_test_or_not   : ARROW test {
 
                         $$ = new Node(nodeID++, "return_type_hint", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
 }
                     | %empty    {
                         
@@ -79,9 +76,9 @@ ARROW_test_or_not   : ARROW test {
 parameters: LEFT_PAREN typedargslist_or_not RIGHT_PAREN    {
 
                 $$ = new Node(nodeID++, "parameters", yylineno);
-                $$->add_child_back($1);
-                $$->add_child_back($2);
-                $$->add_child_back($3);
+                $$->push_back($1);
+                $$->push_back($2);
+                $$->push_back($3);
 }
 
 typedargslist_or_not    : typedargslist         {
@@ -97,16 +94,16 @@ typedargslist   : tfpdef EQUAL_test_or_not COMMA_tfpdef_EQUAL_test_or_not_kleene
                     else
                     {
                         $$ = new Node(nodeID++,"typedargslist", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
                         if($3)
                         {
                             for(auto child: $3->child)
                             {
-                                $$->add_child_back(child);
+                                $$->push_back(child);
                             }
                         }
-                        $$->add_child_back($4);
+                        $$->push_back($4);
                     }
 
 }
@@ -118,13 +115,13 @@ typedargslist   : tfpdef EQUAL_test_or_not COMMA_tfpdef_EQUAL_test_or_not_kleene
                 else
                 {
                     $$ = new Node(nodeID++, "typedargslist", yylineno);
-                    $$->add_child_back($1);
-                    $$->add_child_back($2);
+                    $$->push_back($1);
+                    $$->push_back($2);
                     if($3)
                     {
                         for(auto child: $3->child)
                         {
-                            $$->add_child_back(child);
+                            $$->push_back(child);
                         }
                     }
                 }
@@ -134,8 +131,8 @@ typedargslist   : tfpdef EQUAL_test_or_not COMMA_tfpdef_EQUAL_test_or_not_kleene
 tfpdef  : NAME COLON_test_or_not {
 
                     $$ = new Node(nodeID++, "formal_param", yylineno);
-                    $$->add_child_back($1);
-                    $$->add_child_back($2);
+                    $$->push_back($1);
+                    $$->push_back($2);
 }
 
 COMMA_tfpdef_EQUAL_test_or_not_kleene   : COMMA_tfpdef_EQUAL_test_or_not_kleene COMMA tfpdef EQUAL_test_or_not {
@@ -144,9 +141,9 @@ COMMA_tfpdef_EQUAL_test_or_not_kleene   : COMMA_tfpdef_EQUAL_test_or_not_kleene 
                                         {
                                             $1=new Node(nodeID++, "formal_params", yylineno);
                                         }
-                                        $1->add_child_back($2);
-                                        $1->add_child_back($3);
-                                        $1->add_child_back($4);
+                                        $1->push_back($2);
+                                        $1->push_back($3);
+                                        $1->push_back($4);
                                         $$ = $1;
 }
                                         | %empty    {
@@ -160,8 +157,8 @@ COMMA_tfpdef_EQUAL_test_or_not_kleene   : COMMA_tfpdef_EQUAL_test_or_not_kleene 
 COLON_test_or_not   : COLON test {
 
                         $$ = new Node(nodeID++, "param_type_hint", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
 }
                     | %empty  {
 
@@ -177,8 +174,8 @@ COMMA_or_not    : COMMA {
 
 EQUAL_test_or_not   : EQUAL test {
                         $$ = new Node(nodeID++, "param_val",yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
 }
                     | %empty    {
                         $$ = NULL;
@@ -200,13 +197,13 @@ simple_stmt : small_stmt SEMICOLON_small_stmt_kleene SEMICOLON_or_not NEWLINE {
                 else
                 {
                     $$ = new Node(nodeID++, "simple_stmt", yylineno);
-                    $$->add_child_back($1);
+                    $$->push_back($1);
                     if($2)
                     {
                         for(auto child: $2->child)
-                            $$->add_child_back(child);
+                            $$->push_back(child);
                     }
-                    $$->add_child_back($3);
+                    $$->push_back($3);
                 }
 
 }
@@ -217,8 +214,8 @@ SEMICOLON_small_stmt_kleene : SEMICOLON_small_stmt_kleene SEMICOLON small_stmt {
                         {
                             $1=new Node(nodeID++, "small_stmts", yylineno);
                         }
-                        $1->add_child_back($2);
-                        $1->add_child_back($3);
+                        $1->push_back($2);
+                        $1->push_back($3);
                         $$ = $1;
 }
 
@@ -238,7 +235,7 @@ expr_stmt   : testlist_star_expr annassign {
                         else if($2==NULL) $$=$1;
                         else
                         {
-                            $2->add_child_front($1);
+                            $2->push_front($1);
                             $$=$2;
                         }
 }
@@ -249,8 +246,8 @@ expr_stmt   : testlist_star_expr annassign {
                         else if($2==NULL && $3==NULL) $$=$1;
                         else
                         {
-                            $2->add_child_back($1);
-                            $2->add_child_back($3);
+                            $2->push_back($1);
+                            $2->push_back($3);
                             $$=$2; 
                         }
 }
@@ -261,7 +258,7 @@ expr_stmt   : testlist_star_expr annassign {
                         else if($2==NULL) $$=$1;
                         else
                         {
-                            $2->add_child_front($1);
+                            $2->push_front($1);
                             $$=$2;
                         }
             }
@@ -270,13 +267,13 @@ EQUAL_testlist_star_expr_kleene :EQUAL testlist_star_expr EQUAL_testlist_star_ex
 
                         if($3!=NULL)
                         {
-                            $3->add_child_front($2);
-                            $1->add_child_back($3);
+                            $3->push_front($2);
+                            $1->push_back($3);
                             $$=$1;
                         }
                         else
                         {
-                            $1->add_child_back($2);
+                            $1->push_back($2);
                             $$=$1;
                         }
 }
@@ -287,9 +284,9 @@ EQUAL_testlist_star_expr_kleene :EQUAL testlist_star_expr EQUAL_testlist_star_ex
 annassign   : COLON test EQUAL_test_or_not  {
 
                         $$ = new Node(nodeID++, "annassign", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
 }
 
 
@@ -305,15 +302,15 @@ testlist_star_expr  : test_or_star_expr COMMA_test_or_star_expr_kleene COMMA_or_
                 else
                 {
                         $$ = new Node(nodeID++, "testlist_star_expr", yylineno );
-                        $$->add_child_back($1);
+                        $$->push_back($1);
                         if($2)
                         {
                             for(auto child: $2->child)
                             {
-                                $$->add_child_back(child);
+                                $$->push_back(child);
                             }
                         }
-                        $$->add_child_back($3);
+                        $$->push_back($3);
                 }
 }
 
@@ -346,8 +343,8 @@ continue_stmt   : CONTINUE {$$=$1;}
 return_stmt : RETURN testlist_or_not {
 
                         $$ = new Node(nodeID++, "return_stmt", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
 
 }
 
@@ -358,12 +355,12 @@ testlist_or_not : testlist {$$=$1;}
 global_stmt : GLOBAL NAME {
 
                         $$ = new Node(nodeID++, "global_stmt", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
 }
             | global_stmt COMMA NAME  {
-                        $1->add_child_back($2);
-                        $1->add_child_back($3);
+                        $1->push_back($2);
+                        $1->push_back($3);
 
                         $$=$1;
             }
@@ -371,14 +368,14 @@ global_stmt : GLOBAL NAME {
 nonlocal_stmt   : NONLOCAL NAME {
 
                         $$ = new Node(nodeID++, "nonlocal_stmt", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
 }
 
                 | nonlocal_stmt COMMA NAME {
 
-                        $1->add_child_back($2);
-                        $1->add_child_back($3);
+                        $1->push_back($2);
+                        $1->push_back($3);
 
                         $$=$1;
                 }
@@ -387,17 +384,17 @@ assert_stmt : ASSERT test COMMA_test_or_not {
     
                         $$ = new Node(nodeID++,"assert_stmt",yylineno );
 
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
 }
 
 
 COMMA_test_or_not   : COMMA test {
     
                         $$ = new Node(nodeID++, "COMMA_test", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
 }
                     |  %empty {$$=NULL;}
 
@@ -411,18 +408,18 @@ if_stmt : IF test COLON suite ELIF_test_COLON_suite_kleene ELSE_COLON_suite_or_n
 
     
                         $$ = new Node(nodeID++, "if_stmt", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
-                        $$->add_child_back($4);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
+                        $$->push_back($4);
                         if($5)
                         {
                             for(auto child: $5->child)
                             {
-                                $$->add_child_back(child);
+                                $$->push_back(child);
                             }
                         }
-                        $$->add_child_back($6);
+                        $$->push_back($6);
 
 }
 
@@ -432,10 +429,10 @@ ELIF_test_COLON_suite_kleene    : ELIF_test_COLON_suite_kleene ELIF test COLON s
                                 {
                                     $1=new Node(nodeID++, "ELIF_blocks", yylineno);
                                 }
-                                $1->add_child_back($2);
-                                $1->add_child_back($3);
-                                $1->add_child_back($4);
-                                $1->add_child_back($5);
+                                $1->push_back($2);
+                                $1->push_back($3);
+                                $1->push_back($4);
+                                $1->push_back($5);
 
                                 $$=$1;
     
@@ -449,32 +446,32 @@ while_stmt  : WHILE test COLON suite ELSE_COLON_suite_or_not {
     
                         $$ = new Node(nodeID++, "while_stmt", yylineno);
 
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
-                        $$->add_child_back($4);
-                        $$->add_child_back($5);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
+                        $$->push_back($4);
+                        $$->push_back($5);
 }
 
 for_stmt    : FOR exprlist IN testlist COLON suite ELSE_COLON_suite_or_not  {
 
                         $$ = new Node(nodeID++, "for_stmt", yylineno);
 
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
-                        $$->add_child_back($4);
-                        $$->add_child_back($5);
-                        $$->add_child_back($6);
-                        $$->add_child_back($7);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
+                        $$->push_back($4);
+                        $$->push_back($5);
+                        $$->push_back($6);
+                        $$->push_back($7);
 }
 
 ELSE_COLON_suite_or_not : ELSE COLON suite {
     
                         $$ = new Node(nodeID++, "ELSE_block", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
 }
                         | %empty  {$$=NULL;}
 
@@ -487,13 +484,13 @@ suite   : simple_stmt   {$$=$1;}
 
 stmt_plus   : stmt_plus stmt {
 
-                if($1==NULL || $1->name!="stmts")
+                if($1==NULL || $1->title!="stmts")
                 {
                     Node* temp=$1;
                     $1=new Node(nodeID++, "stmts", yylineno);
-                    $1->add_child_back(temp);
+                    $1->push_back(temp);
                 }
-                $1->add_child_back($2);
+                $1->push_back($2);
                 $$=$1;
     
 }
@@ -510,8 +507,8 @@ test    : or_test IF_or_test_ELSE_test_or_not  {
     {
 
         $$ = new Node(nodeID++, "test", yylineno);
-        $$->add_child_back($1);
-        $$->add_child_back($2);
+        $$->push_back($1);
+        $$->push_back($2);
     }
 }
 
@@ -519,10 +516,10 @@ IF_or_test_ELSE_test_or_not : IF or_test ELSE test  {
 
 
                         $$ = new Node(nodeID++, "inline_IF_ELSE", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
-                        $$->add_child_back($4);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
+                        $$->push_back($4);
 }
                             | %empty  {$$=NULL;}
 
@@ -535,8 +532,8 @@ or_test : and_test  {
         | or_test OR and_test  {
 
 
-                $2->add_child_back($1);
-                $2->add_child_back($3);
+                $2->push_back($1);
+                $2->push_back($3);
                 $$=$2;
 }
 
@@ -547,13 +544,13 @@ and_test    : not_test {
 
             | and_test AND not_test {
 
-                $2->add_child_back($1);
-                $2->add_child_back($3);
+                $2->push_back($1);
+                $2->push_back($3);
                 $$=$2;
 }
 
 not_test    : NOT not_test {
-                $1->add_child_back($2);
+                $1->push_back($2);
                 $$=$1;
 }
             | comparison {                            
@@ -564,8 +561,8 @@ comparison  : expr {
                 $$ = $1;
 }
             | comparison comp_op expr {
-                $2->add_child_back($1);
-                $2->add_child_back($3);
+                $2->push_back($1);
+                $2->push_back($3);
                 $$=$2;
 }
 
@@ -584,8 +581,8 @@ comp_op : LESS_THAN { $$=$1;}
 
 star_expr   : MULTIPLY expr {                            
         $$ = new Node(nodeID++, "star_expr", yylineno);
-        $$->add_child_back($1);
-        $$->add_child_back($2);
+        $$->push_back($1);
+        $$->push_back($2);
 }
 
 expr    : xor_expr {                            
@@ -594,8 +591,8 @@ expr    : xor_expr {
         | expr BITWISE_OR xor_expr {
 
                 $$=$2;
-                $$->add_child_back($1);
-                $$->add_child_back($3);
+                $$->push_back($1);
+                $$->push_back($3);
 }
 
 
@@ -604,8 +601,8 @@ xor_expr    : and_expr {
 } 
             | xor_expr BITWISE_XOR and_expr {
                 $$=$2;
-                $$->add_child_back($1);
-                $$->add_child_back($3);
+                $$->push_back($1);
+                $$->push_back($3);
 }
 
 and_expr    : shift_expr {                            
@@ -613,8 +610,8 @@ and_expr    : shift_expr {
 }
             | and_expr BITWISE_AND shift_expr {
                 $$=$2;
-                $$->add_child_back($1);
-                $$->add_child_back($3);
+                $$->push_back($1);
+                $$->push_back($3);
 }
 
 shift_expr  : arith_expr {                            
@@ -623,8 +620,8 @@ shift_expr  : arith_expr {
             | shift_expr LEFT_SHIFT_or_RIGHT_SIHFT arith_expr 
             {
                 $$=$2;
-                $$->add_child_back($1);
-                $$->add_child_back($3);
+                $$->push_back($1);
+                $$->push_back($3);
 }
 
 LEFT_SHIFT_or_RIGHT_SIHFT   : LEFT_SHIFT {
@@ -639,8 +636,8 @@ arith_expr  : term {
 }
             | arith_expr PLUS_or_MINUS term {
                 $$=$2;
-                $$->add_child_back($1);
-                $$->add_child_back($3);
+                $$->push_back($1);
+                $$->push_back($3);
 }
 
 PLUS_or_MINUS   : PLUS {
@@ -656,8 +653,8 @@ term    : factor {
         | term MULTIPLY_or_RATE_or_DIVIDE_or_REMAINDER_or_INTEGER_DIVIDE factor {
 
                 $$=$2;
-                $$->add_child_back($1);
-                $$->add_child_back($3);
+                $$->push_back($1);
+                $$->push_back($3);
 
 }
 
@@ -669,7 +666,7 @@ MULTIPLY_or_RATE_or_DIVIDE_or_REMAINDER_or_INTEGER_DIVIDE   : MULTIPLY          
 
 factor  : PLUS_or_MINUS_or_BITWISE_NOT factor {
                 $$=$1;
-                $$->add_child_back($2);
+                $$->push_back($2);
 }
         | power {                           
             $$ = $1;
@@ -686,13 +683,13 @@ power   : atom_expr  POWER_factor_or_not    {
         else
         {
             $$=$2;
-            $$->add_child_front($1);
+            $$->push_front($1);
         }
 }
 
 POWER_factor_or_not     : POWER factor {
                 $$=$1;
-                $$->add_child_front($2);
+                $$->push_front($2);
 }
                         | %empty    {
                             $$ = NULL;
@@ -704,15 +701,15 @@ atom_expr   : atom  {
 }
             | atom_expr trailer     {
 
-                if($1==NULL || $1->name!="atom_expr")
+                if($1==NULL || $1->title!="atom_expr")
                 {
                     $$=new Node(nodeID++, "atom_expr", yylineno);
-                    $$->add_child_back($1);
-                    $$->add_child_back($2);
+                    $$->push_back($1);
+                    $$->push_back($2);
                 }
                 else
                 {
-                    $1->add_child_back($2);
+                    $1->push_back($2);
                     $$ = $1;
                 }
 }
@@ -722,16 +719,16 @@ atom    : LEFT_PAREN  testlist_comp_or_not RIGHT_PAREN {
 
 
                         $$ = new Node(nodeID++, "atom", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
 }
         | LEFT_BRACKET testlist_comp_or_not RIGHT_BRACKET {
 
                         $$ = new Node(nodeID++, "atom", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
 
 
 }
@@ -744,15 +741,15 @@ atom    : LEFT_PAREN  testlist_comp_or_not RIGHT_PAREN {
 
 STRING_plus : STRING_plus STRING_LITERAL  {
 
-                    if($1->name!="strings")
+                    if($1->title!="strings")
                     {
                         $$=new Node(nodeID++, "strings", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
                     }
                     else
                     {
-                        $1->add_child_back($2);
+                        $1->push_back($2);
                         $$ = $1;
                     }
 }
@@ -763,21 +760,21 @@ STRING_plus : STRING_plus STRING_LITERAL  {
 testlist_comp   : test_or_star_expr comp_for {
 
                         $$ = new Node(nodeID++, "testlist_comp", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
+                        $$->push_back($1);
+                        $$->push_back($2);
 }
                 | test_or_star_expr COMMA_test_or_star_expr_kleene COMMA_or_not {
 
                         $$ = new Node(nodeID++, "testlist_comp", yylineno);
-                        $$->add_child_back($1);
+                        $$->push_back($1);
                         if($2)
                         {
                             for(auto child: $2->child)
                             {
-                                $$->add_child_back(child);
+                                $$->push_back(child);
                             }
                         }
-                        $$->add_child_back($3);
+                        $$->push_back($3);
 
 }
 
@@ -787,8 +784,8 @@ COMMA_test_or_star_expr_kleene  : COMMA_test_or_star_expr_kleene COMMA test_or_s
                     {
                         $1=new Node(nodeID++, "COMMA_test_or_star_exprs", yylineno);
                     }
-                    $1->add_child_back($2);
-                    $1->add_child_back($3);
+                    $1->push_back($2);
+                    $1->push_back($3);
 
                     $$ = $1;
 }
@@ -807,22 +804,22 @@ testlist_comp_or_not    : testlist_comp {
 trailer : LEFT_PAREN arglist_or_not RIGHT_PAREN  {
 
                         $$ = new Node(nodeID++, "trailer", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
 }
         | LEFT_BRACKET subscriptlist RIGHT_BRACKET  {
 
                         $$ = new Node(nodeID++, "trailer", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
 
 }
         | PERIOD NAME {
             $$ =new Node(nodeID++, "trailer", yylineno);
-            $$->add_child_back($1);
-            $$->add_child_back($2);
+            $$->push_back($1);
+            $$->push_back($2);
             
 }
 
@@ -834,15 +831,15 @@ subscriptlist   : subscript COMMA_subscript_kleene COMMA_or_not {
                 else
                 {
                         $$ = new Node(nodeID++, "subscriptlist", yylineno);
-                        $$->add_child_back($1);
+                        $$->push_back($1);
                         if($2)
                         {
                             for(auto child: $2->child)
                             {
-                                $$->add_child_back(child);
+                                $$->push_back(child);
                             }
                         }
-                        $$->add_child_back($3);
+                        $$->push_back($3);
                 }
 }
 
@@ -851,8 +848,8 @@ COMMA_subscript_kleene  : COMMA_subscript_kleene COMMA subscript {
                     if($1 == NULL){
                         $1=new Node(nodeID++, "subscripts", yylineno);
                     }
-                    $1->add_child_back($2);
-                    $1->add_child_back($3);
+                    $1->push_back($2);
+                    $1->push_back($3);
                     
                     $$ = $1;
 }
@@ -872,15 +869,15 @@ exprlist    : expr_or_star_expr COMMA_expr_or_star_expr_kleene COMMA_or_not {
                 {
                     $$ = new Node(nodeID++, "exprlist", yylineno);
 
-                    $$->add_child_back($1);
+                    $$->push_back($1);
                     if($2)
                     {
                         for(auto child: $2->child)
                         {
-                            $$->add_child_back(child);
+                            $$->push_back(child);
                         }
                     }
-                    $$->add_child_back($3);
+                    $$->push_back($3);
                 }
 }
 
@@ -889,8 +886,8 @@ COMMA_expr_or_star_expr_kleene  : COMMA_expr_or_star_expr_kleene COMMA expr_or_s
                     if($1 == NULL){
                         $1=new Node(nodeID++, "COMMA_expr_or_star_expr_kleene", yylineno);
                     }
-                    $1->add_child_back($2);
-                    $1->add_child_back($3);
+                    $1->push_back($2);
+                    $1->push_back($3);
                     
                     $$ = $1;
 }
@@ -909,15 +906,15 @@ testlist    : test COMMA_test_kleene COMMA_or_not {
                 else
                 {
                         $$ = new Node(nodeID++, "testlist", yylineno);
-                        $$->add_child_back($1);
+                        $$->push_back($1);
                         if($2)
                         {
                             for(auto child: $2->child)
                             {
-                                $$->add_child_back(child);
+                                $$->push_back(child);
                             }
                         }
-                        $$->add_child_back($3);    
+                        $$->push_back($3);    
                 }
 }
 
@@ -926,8 +923,8 @@ COMMA_test_kleene   : COMMA_test_kleene COMMA test {
                     if($1 == NULL){
                         $1=new Node(nodeID++, "tests", yylineno);
                     }
-                    $1->add_child_back($2);
-                    $1->add_child_back($3);
+                    $1->push_back($2);
+                    $1->push_back($3);
                     
                     $$ = $1;
 }
@@ -941,11 +938,11 @@ classdef    : CLASS NAME LEFT_PAREN_arglist_or_not_RIGHT_PAREN_or_not COLON suit
 
 
                         $$ = new Node(nodeID++, "classdef", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
-                        $$->add_child_back($4);
-                        $$->add_child_back($5);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
+                        $$->push_back($4);
+                        $$->push_back($5);
                         
 }
 
@@ -953,9 +950,9 @@ LEFT_PAREN_arglist_or_not_RIGHT_PAREN_or_not    : LEFT_PAREN arglist_or_not RIGH
 
 
                         $$ = new Node(nodeID++, "optional_arglist", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
                         
 }
                         | %empty {$$=NULL;} 
@@ -971,16 +968,16 @@ arglist : argument COMMA_argument_kleene COMMA_or_not {
                 else
                 {
                         $$ = new Node(nodeID++, "arglist", yylineno);
-                        $$->add_child_back($1);
+                        $$->push_back($1);
                         
                         if($2)
                         {
                             for(auto child: $2->child)
                             {
-                                $$->add_child_back(child);
+                                $$->push_back(child);
                             }
                         }   
-                        $$->add_child_back($3);
+                        $$->push_back($3);
                 }
 }
 
@@ -989,8 +986,8 @@ COMMA_argument_kleene   : COMMA_argument_kleene COMMA argument {
                 if($1 == NULL){
                     $1=new Node(nodeID++, "arguments", yylineno);
                 }
-                $1->add_child_back($2);
-                $1->add_child_back($3);
+                $1->push_back($2);
+                $1->push_back($3);
                 
                 $$ = $1;
 }
@@ -1006,8 +1003,8 @@ argument    : test comp_for_or_not {
                 else
                 {
                     $$ = new Node(nodeID++, "argument", yylineno);
-                    $$->add_child_back($1);
-                    $$->add_child_back($2);
+                    $$->push_back($1);
+                    $$->push_back($2);
                         
                 }
 }
@@ -1015,9 +1012,9 @@ argument    : test comp_for_or_not {
 
 
                 $$ = new Node(nodeID++, "argument", yylineno);
-                $$->add_child_back($1);
-                $$->add_child_back($2);
-                $$->add_child_back($3);
+                $$->push_back($1);
+                $$->push_back($2);
+                $$->push_back($3);
                         
 }
 
@@ -1031,21 +1028,21 @@ comp_for    : ASYNC_or_not FOR exprlist IN or_test comp_iter_or_not {
 
 
                         $$ = new Node(nodeID++, "comp_for", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
-                        $$->add_child_back($4);
-                        $$->add_child_back($5);
-                        $$->add_child_back($6);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
+                        $$->push_back($4);
+                        $$->push_back($5);
+                        $$->push_back($6);
 
 }
 
 comp_if     : IF test_nocond comp_iter_or_not {
 
                         $$ = new Node(nodeID++, "comp_if", yylineno);
-                        $$->add_child_back($1);
-                        $$->add_child_back($2);
-                        $$->add_child_back($3);
+                        $$->push_back($1);
+                        $$->push_back($2);
+                        $$->push_back($3);
                         
 }
 
@@ -1068,7 +1065,7 @@ void create_edges(ofstream &fout, Node* curr_node)
     {
         if(child)
         {
-            fout<<"node"<<curr_node->n<<" -> node"<<child->n<<";\n";
+            fout<<"node"<<curr_node->id<<" -> node"<<child->id<<";\n";
             create_edges(fout, child);
         }
     }
@@ -1080,9 +1077,9 @@ void create_nodes(ofstream &fout, Node *curr_node){
         return;
     }
     if(curr_node->lexval=="")
-        fout<<"node"<<curr_node->n<<" [label= \""<<curr_node->name<<"\"]\n";
-    else if(curr_node->name!="STRING_LITERAL")
-        fout<<"node"<<curr_node->n<<" [label= \""<<curr_node->name<<"("<<curr_node->lexval<<")"<<"\", shape = rectangle, color = "<< color[curr_node->name]<<"]\n";
+        fout<<"node"<<curr_node->id<<" [label= \""<<curr_node->title<<"\"]\n";
+    else if(curr_node->title!="STRING_LITERAL")
+        fout<<"node"<<curr_node->id<<" [label= \""<<curr_node->title<<"("<<curr_node->lexval<<")"<<"\", shape = rectangle, color = "<< color[curr_node->title]<<"]\n";
     else
     {
         string temp;
@@ -1095,7 +1092,7 @@ void create_nodes(ofstream &fout, Node *curr_node){
             }
             temp+=c;
         }
-        fout<<"node"<<curr_node->n<<" [label= \""<<curr_node->name<<"("<<temp<<")"<<"\", shape = rectangle, color = "<< color[curr_node->name]<<"]\n";
+        fout<<"node"<<curr_node->id<<" [label= \""<<curr_node->title<<"("<<temp<<")"<<"\", shape = rectangle, color = "<< color[curr_node->title]<<"]\n";
     }
     for(auto &child: curr_node->child){
         if(child) create_nodes(fout, child);

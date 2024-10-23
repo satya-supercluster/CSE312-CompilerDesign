@@ -1,5 +1,6 @@
 %{
-    #include<bits/stdc++.h>
+    #include "node/node.h"
+    #include "parser.tab.h"
     using namespace std;
     int bracket_count{};
     deque<int> tokenQ;
@@ -51,7 +52,6 @@
 %option noyywrap
 %option yylineno
 
-// Rules
 STRING_ESCAPE_SEQ                                                       ("\\")([^\r\n]|[\n]|([\r][\n]))
 
 LONG_STRING_CHAR_SNGLE                                                  [^\\\']
