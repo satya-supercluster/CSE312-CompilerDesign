@@ -2,6 +2,17 @@
 #define SYMBOL_TABLE_H
 #include <bits/stdc++.h>
 
+struct temp_type_info
+{
+    string type;
+    string type_min;
+    vector<string> args;
+    vector<string> args_min;
+    vector<SymbolTableEntry*> candidates;
+    int trailer_type;
+    bool is_lvalue;
+};
+
 enum types
 {
     OBJ,

@@ -14,11 +14,10 @@ public:
     //symbol table req. starts
     std::string lvalue;
     std::string rvalue;
-
     int if_executed_jump;
     int if_not_executed_jump;
     std::string else_block_label;
-
+    struct temp_type_info *info;
     int size_of_params;
     int begin_func_idx;
     std::vector<int> break_jumps;
