@@ -383,7 +383,7 @@ stmt    : simple_stmt {
             if($8->lexval!="main")
                 error("Program must begin from main function", $1->lineno);
             if($4->lexval!="\"__main__\""){
-                cout<<$4->lexval<<endl;
+                // cout<<$4->lexval<<endl;
                 error("__name__ must be \"__main__\"", $1->lineno);
             }
             
