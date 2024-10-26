@@ -7,6 +7,21 @@
     stack<int> indent_stack({0});
     extern void yyerror(string str);
     extern int nodeID;
+    string explicitLineContinuationCheck(const string &s)
+    {
+        string t;
+        for(int i{};i<s.length();i++)
+        {
+            if(s[i]=='\\' && i+1<s.size() && s[i+1]=='\n')
+                i++;
+            else if(s[i]=='\\' && i+1<s.size() && s[i+1]=='\r' && i+2<s.size() && s[i+2]=='\n')
+                i+=2;
+            else
+                t.push_back(s[i]);
+            
+        }
+        return t;
+    }
     void indent_handle(const string &s)
     {
         int width=count(s.begin(),s.end(),' ')+2*count(s.begin(),s.end(),'\t');
@@ -32,80 +47,54 @@
             yyerror("Indentation error");
         }
     }
-    string modified(const string &s)
-    {
-        string t;
-        for(int i{};i<s.length();i++)
-        {
-            if(s[i]=='\\' && i+1<s.size() && s[i+1]=='\n')
-                i++;
-            else if(s[i]=='\\' && i+1<s.size() && s[i+1]=='\r' && i+2<s.size() && s[i+2]=='\n')
-                i+=2;
-            else
-                t.push_back(s[i]);
-            
-        }
-        return t;
-    }
 %}
 
 %option noyywrap
 %option yylineno
 
-STRING_ESCAPE_SEQ                                                       ("\\")([^\r\n]|[\n]|([\r][\n]))
+STRING_ESCAPE_SEQ                      ("\\")([^\r\n]|[\n]|([\r][\n]))
 
-LONG_STRING_CHAR_SNGLE                                                  [^\\\']
-LONG_STRING_CHAR_DOUBLE                                                  [^\\\"]
-A_SINGLE                                                                "\'"{LONG_STRING_CHAR_SNGLE}
-B_SINGLE                                                                "\'\'"{LONG_STRING_CHAR_SNGLE}
-A_DOUBLE                                                                "\""{LONG_STRING_CHAR_DOUBLE}
-B_DOUBLE                                                                "\"\""{LONG_STRING_CHAR_DOUBLE}
-LONG_STRING_ITEM_SINGLE                                                 {A_SINGLE}|{B_SINGLE}|{LONG_STRING_CHAR_SNGLE}|{STRING_ESCAPE_SEQ}
-LONG_STRING_ITEM_DOUBLE                                                 {A_DOUBLE}|{B_DOUBLE}|{LONG_STRING_CHAR_DOUBLE}|{STRING_ESCAPE_SEQ}
-LONG_STRING                                                             ("\'\'\'"{LONG_STRING_ITEM_SINGLE}*"\'\'\'")|("\"\"\""{LONG_STRING_ITEM_DOUBLE}*"\"\"\"")
+LONG_STRING_CHAR_SNGLE                 [^\\\']
+LONG_STRING_CHAR_DOUBLE                [^\\\"]
+A_SINGLE                               "\'"{LONG_STRING_CHAR_SNGLE}
+B_SINGLE                               "\'\'"{LONG_STRING_CHAR_SNGLE}
+A_DOUBLE                               "\""{LONG_STRING_CHAR_DOUBLE}
+B_DOUBLE                               "\"\""{LONG_STRING_CHAR_DOUBLE}
+LONG_STRING_ITEM_SINGLE                {A_SINGLE}|{B_SINGLE}|{LONG_STRING_CHAR_SNGLE}|{STRING_ESCAPE_SEQ}
+LONG_STRING_ITEM_DOUBLE                {A_DOUBLE}|{B_DOUBLE}|{LONG_STRING_CHAR_DOUBLE}|{STRING_ESCAPE_SEQ}
+LONG_STRING                            ("\'\'\'"{LONG_STRING_ITEM_SINGLE}*"\'\'\'")|("\"\"\""{LONG_STRING_ITEM_DOUBLE}*"\"\"\"")
 
+EOL                                    ([\n])|([\r][\n])
+SHORT_STRING_CHAR_SINGLE               [^\\\n\'\r]
+SHORT_STRING_CHAR_DOUBLE               [^\\\n\"\r]
+SHORT_STRING_ITEM_SINGLE               {SHORT_STRING_CHAR_SINGLE}|{STRING_ESCAPE_SEQ}
+SHORT_STRING_ITEM_DOUBLE               {SHORT_STRING_CHAR_DOUBLE}|{STRING_ESCAPE_SEQ}
+SHORT_STRING                           ("\'"{SHORT_STRING_ITEM_SINGLE}*"\'")|("\""{SHORT_STRING_ITEM_DOUBLE}*"\"")
+STRING_PREFIX                          ("r"|"u"|"R"|"U"|"f"|"F"|"fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF")
+STRING_LITERAL                         {STRING_PREFIX}?({SHORT_STRING}|{LONG_STRING})
 
-EOL                                                                     ([\n])|([\r][\n])
-SHORT_STRING_CHAR_SINGLE                                                [^\\\n\'\r]
-SHORT_STRING_CHAR_DOUBLE                                                [^\\\n\"\r]
-SHORT_STRING_ITEM_SINGLE                                                {SHORT_STRING_CHAR_SINGLE}|{STRING_ESCAPE_SEQ}
-SHORT_STRING_ITEM_DOUBLE                                                {SHORT_STRING_CHAR_DOUBLE}|{STRING_ESCAPE_SEQ}
-SHORT_STRING                                                            ("\'"{SHORT_STRING_ITEM_SINGLE}*"\'")|("\""{SHORT_STRING_ITEM_DOUBLE}*"\"")
-STRING_PREFIX                                                           ("r"|"u"|"R"|"U"|"f"|"F"|"fr"|"Fr"|"fR"|"FR"|"rf"|"rF"|"Rf"|"RF")
-STRING_LITERAL                                                          {STRING_PREFIX}?({SHORT_STRING}|{LONG_STRING})
-
-
-
-
-
-NAMES                                                                   [a-zA-Z_][0-9a-zA-Z_]*
-DIGIT																	[0-9]
-NON_ZERO_DIGIT															[1-9]
-BIN_DIGIT																[0-1]
-OCT_DIGIT																[0-7]
-HEX_DIGIT																[0-9a-fA-F]
-DEC_INTEGER																({NON_ZERO_DIGIT}("_"|{DIGIT})*)|(0+[0_]*)
-BIN_INTEGER																0[bB]("_"|{BIN_DIGIT})+
-OCT_INTEGER																0[oO]("_"|{OCT_DIGIT})+
-HEX_INTEGER																0[xX]("_"|{HEX_DIGIT})+
-DIGITPART																{DIGIT}("_"|{DIGIT})*
-FRACTION																"."{DIGITPART}
-EXPONENT																[eE]("+"|"-")?{DIGITPART}
-POINT_FLOAT																({DIGITPART}?{FRACTION})|({DIGITPART}".")
-EXPONENT_FLOAT															({DIGITPART}|{POINT_FLOAT}){EXPONENT}
-FLOAT_NUMBER                                                            {POINT_FLOAT}|{EXPONENT_FLOAT}
-
-IMAGINARY_NO                                                            ({FLOAT_NUMBER}|{DIGITPART})("J"|"j")
-
-
-COMMENT                                                                 ("#"[^\n\r]*)
-
-INDENT                                                                  {EOL}(((" ")|[\t])*)
-
-EXPLICT_LINE_JOINING                                                    "\\"{EOL}
-
-EXTRA_THINGS                                                            [ \t]*{COMMENT}?
-WHITE_SPACE                                                             [ \t\f\r]
+NAMES                                   [a-zA-Z_][0-9a-zA-Z_]*
+DIGIT					[0-9]
+NON_ZERO_DIGIT				[1-9]
+BIN_DIGIT				[0-1]
+OCT_DIGIT				[0-7]
+HEX_DIGIT				[0-9a-fA-F]
+DEC_INTEGER				({NON_ZERO_DIGIT}("_"|{DIGIT})*)|(0+[0_]*)
+BIN_INTEGER				0[bB]("_"|{BIN_DIGIT})+
+OCT_INTEGER				0[oO]("_"|{OCT_DIGIT})+
+HEX_INTEGER				0[xX]("_"|{HEX_DIGIT})+
+DIGITPART				{DIGIT}("_"|{DIGIT})*
+FRACTION				"."{DIGITPART}
+EXPONENT				[eE]("+"|"-")?{DIGITPART}
+POINT_FLOAT				({DIGITPART}?{FRACTION})|({DIGITPART}".")
+EXPONENT_FLOAT				({DIGITPART}|{POINT_FLOAT}){EXPONENT}
+FLOAT_NUMBER                            {POINT_FLOAT}|{EXPONENT_FLOAT}
+IMAGINARY_NO                            ({FLOAT_NUMBER}|{DIGITPART})("J"|"j")
+COMMENT                                 ("#"[^\n\r]*)
+INDENT                                  {EOL}(((" ")|[\t])*)
+EXPLICT_LINE_JOINING                    "\\"{EOL}
+EXTRA_THINGS                            [ \t]*{COMMENT}?
+WHITE_SPACE                             [ \t\f\r]
 
 
 %%
@@ -118,23 +107,23 @@ WHITE_SPACE                                                             [ \t\f\r
     }
 
 "int"   {  
-        yylval.node=new Node(nodeID++, "TYPE NAME", yylineno, yytext); 
+        yylval.node=new Node(nodeID++, "DATA TYPE", yylineno, yytext); 
         return NAME; 
 }
 "float" {  
-        yylval.node=new Node(nodeID++, "TYPE NAME", yylineno, yytext);
+        yylval.node=new Node(nodeID++, "DATA TYPE", yylineno, yytext);
         return NAME; 
 }
 "str"   {
-        yylval.node=new Node(nodeID++, "TYPE NAME", yylineno, yytext);  
+        yylval.node=new Node(nodeID++, "DATA TYPE", yylineno, yytext);  
         return NAME; 
 }
 "bool"  {  
-        yylval.node=new Node(nodeID++, "TYPE NAME", yylineno, yytext);
+        yylval.node=new Node(nodeID++, "DATA TYPE", yylineno, yytext);
         return NAME; 
 }
 "list"  {  
-        yylval.node=new Node(nodeID++, "TYPE NAME", yylineno, yytext);
+        yylval.node=new Node(nodeID++, "DATA TYPE", yylineno, yytext);
         return NAME; 
 }
 "break" {  
@@ -208,20 +197,6 @@ WHITE_SPACE                                                             [ \t\f\r
         yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext); 
         return FALSE; 
 }
-"or"    { 
-
-        yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext); 
-        return OR; 
-                                                                            
-}
-"and"   { 
-        yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext); 
-            return AND; 
-}
-"not"   { 
-        yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext); 
-        return NOT; 
-}
 "is"    { 
         yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
             return IS; 
@@ -231,8 +206,6 @@ WHITE_SPACE                                                             [ \t\f\r
         yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
         return ASYNC; 
 }
-
-
 
 "(" {  
         bracket_count++;
@@ -265,6 +238,20 @@ WHITE_SPACE                                                             [ \t\f\r
 ":" {  
         yylval.node=new Node(nodeID++, "DELIMITER", yylineno, yytext);
         return COLON; 
+}
+"or"    { 
+
+        yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext); 
+        return OR; 
+                                                                            
+}
+"and"   { 
+        yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext); 
+            return AND; 
+}
+"not"   { 
+        yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext); 
+        return NOT; 
 }
 "=" {   
         yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext);
@@ -419,7 +406,7 @@ WHITE_SPACE                                                             [ \t\f\r
 }
 
 {NAMES}                             {
-                                        yylval.node = new Node(nodeID++, "NAME", yylineno, yytext);
+                                        yylval.node = new Node(nodeID++, "IDENTIFIER", yylineno, yytext);
                                         return NAME; 
 }
 
@@ -447,7 +434,7 @@ WHITE_SPACE                                                             [ \t\f\r
 
                                                                             
 {STRING_LITERAL}                    { 
-                                        yylval.node = new Node(nodeID++, "STRING_LITERAL", yylineno, modified(yytext));
+                                        yylval.node = new Node(nodeID++, "STRING_LITERAL", yylineno, explicitLineContinuationCheck(yytext));
                                         return STRING_LITERAL;
 }
 

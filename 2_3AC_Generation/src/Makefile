@@ -1,8 +1,8 @@
 # makefile
 all: parser
 
-parser: parser.o lex.o node/node.o
-	g++ -o parser parser.o lex.o node/node.o -ll
+parser: parser.o lex.o node/node.o symbol_table/symbol_table.o 3ac/3ac.0
+	g++ -o parser parser.o lex.o node/node.o symbol_table/symbol_table.o 3ac/3ac.o -ll
 
 parser.o: parser.tab.c
 	g++ -o parser.o -c parser.tab.c
@@ -19,5 +19,11 @@ lex.yy.c: lexer.l
 node/node.o: node/node.cpp node/node.h
 	g++ -o node/node.o -c node/node.cpp
 
+symbol_table/symbol_table.o: symbol_table/symbol_table.cpp symbol_table/symbol_table.h
+	g++ -o symbol_table/symbol_table.o -c symbol_table/symbol_table.cpp
+
+3ac/3ac.o: 3ac/3ac.cpp 3ac/3ac.h
+	g++ -o 3ac/3ac.o -c 3ac/3ac.cpp
+
 clean:
-	rm -f *.o parser parser.tab.c parser.tab.h lex.yy.c
+	rm -f *.o **/*.o parser parser.tab.c parser.tab.h lex.yy.c

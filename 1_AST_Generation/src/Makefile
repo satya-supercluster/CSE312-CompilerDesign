@@ -20,4 +20,4 @@ node/node.o: node/node.cpp node/node.h
 	g++ -o node/node.o -c node/node.cpp
 
 clean:
-	rm -f *.o parser parser.tab.c parser.tab.h lex.yy.c
+	rm -f *.o **/*.o parser parser.tab.c parser.tab.h lex.yy.c
