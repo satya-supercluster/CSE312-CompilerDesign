@@ -1,0 +1,6 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+__init__,NAME,Function,(CheckingAccount:str:float:float),41,None
+account_number,NAME,Variable,str,42
+balance,NAME,Variable,float,43
+overdraft_limit,NAME,Variable,float,44
+withdraw,NAME,Function,(CheckingAccount:float),47,None

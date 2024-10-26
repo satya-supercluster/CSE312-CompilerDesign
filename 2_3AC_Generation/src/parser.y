@@ -1,8 +1,5 @@
 %{
-    #include "node/node.h"
-    #include "symbol_table/symbol_table.h"
-    #include "type_utils/type_utils.h"
-    #include "3ac/3ac.h"
+    #include "header.h"
     using namespace std;
     extern FILE* yyin;
     extern int yydebug;
@@ -48,12 +45,12 @@
     Node *node;
 }
 
-%token NAME__  
+%token NAME__
 %token<node>  BREAK CONTINUE RETURN GLOBAL CLASS DEF IF ELIF ELSE WHILE FOR IN NONE TRUE FALSE OR AND NOT INDENT DEDENT
 
 %token<node> LEFT_PAREN RIGHT_PAREN LEFT_BRACKET RIGHT_BRACKET ARROW SEMICOLON COLON EQUAL PLUS_EQUAL MINUS_EQUAL MULTIPLY_EQUAL DIVIDE_EQUAL REMAINDER_EQUAL BITWISE_AND_EQUAL BITWISE_OR_EQUAL BITWISE_XOR_EQUAL LEFT_SHIFT_EQUAL RIGHT_SHIFT_EQUAL POWER_EQUAL INTEGER_DIVIDE INTEGER_DIVIDE_EQUAL COMMA PERIOD  MULTIPLY DIVIDE POWER BITWISE_OR PLUS MINUS EQUAL_EQUAL NOT_EQUAL LESS_THAN_EQUAL LESS_THAN GREATER_THAN_EQUAL GREATER_THAN BITWISE_AND BITWISE_XOR REMAINDER BITWISE_NOT
 %token<node> NEWLINE NAME STRING_LITERAL LEFT_SHIFT RIGHT_SIHFT INTEGER FLOAT_NUMBER IMAGINARY_NO
-%type<node> file_input NEWLINE_or_stmt funcdef  ARROW_test_or_not parameters typedargslist_or_not typedargslist tfpdef COMMA_tfpdef_EQUAL_test_or_not_kleene COLON_test_or_not COMMA_or_not EQUAL_test_or_not stmt simple_stmt SEMICOLON_small_stmt_kleene small_stmt expr_stmt EQUAL_testlist_star_expr_kleene annassign SEMICOLON_or_not testlist_star_expr test_or_star_expr augassign flow_stmt break_stmt continue_stmt return_stmt testlist_or_not global_stmt compound_stmt if_stmt ELIF_test_COLON_suite_kleene while_stmt for_stmt ELSE_COLON_suite_or_not suite stmt_plus test or_test and_test not_test comparison comp_op expr xor_expr and_expr shift_expr LEFT_SHIFT_or_RIGHT_SIHFT arith_expr PLUS_or_MINUS term MULTIPLY_or_RATE_or_DIVIDE_or_REMAINDER_or_INTEGER_DIVIDE factor PLUS_or_MINUS_or_BITWISE_NOT power POWER_factor_or_not atom_expr atom STRING_plus testlist_comp COMMA_test_or_star_expr_kleene testlist_comp_or_not trailer subscript exprlist expr_or_star_expr testlist classdef LEFT_PAREN_arglist_or_not_RIGHT_PAREN_or_not arglist_or_not arglist COMMA_argument_kleene argument file_input_final 
+%type<node> file_input NEWLINE_or_stmt funcdef  ARROW_test_or_not parameters typedargslist_or_not typedargslist tfpdef COMMA_tfpdef_EQUAL_test_or_not_kleene COLON_test_or_not COMMA_or_not EQUAL_test_or_not stmt simple_stmt SEMICOLON_small_stmt_kleene small_stmt expr_stmt EQUAL_testlist_star_expr_kleene annassign SEMICOLON_or_not testlist_star_expr test_or_star_expr augassign flow_stmt break_stmt continue_stmt return_stmt testlist_or_not global_stmt compound_stmt if_stmt ELIF_test_COLON_suite_kleene while_stmt for_stmt ELSE_COLON_suite_or_not suite stmt_plus test or_test and_test not_test comparison comp_op expr xor_expr and_expr shift_expr LEFT_SHIFT_or_RIGHT_SIHFT arith_expr PLUS_or_MINUS term MULTIPLY_or_RATE_or_DIVIDE_or_REMAINDER_or_INTEGER_DIVIDE factor PLUS_or_MINUS_or_BITWISE_NOT power POWER_factor_or_not atom_expr atom STRING_plus testlist_comp COMMA_test_or_star_expr_kleene testlist_comp_or_not trailer subscript exprlist expr_or_star_expr testlist classdef LEFT_PAREN_arglist_or_not_RIGHT_PAREN_or_not arglist_or_not arglist COMMA_argument_kleene argument THE_BEGIN
 
 %%
 
@@ -385,8 +382,10 @@ stmt    : simple_stmt {
             
             if($8->lexval!="main")
                 error("Program must begin from main function", $1->lineno);
-            if($4->lexval!="__main__")
+            if($4->lexval!="\"__main__\""){
+                cout<<$4->lexval<<endl;
                 error("__name__ must be \"__main__\"", $1->lineno);
+            }
             
             tac.push_back(quad("programstart"));
             tac.push_back(quad("call","main","0", "", FUNCCALL));
@@ -470,7 +469,7 @@ expr_stmt   : testlist_star_expr annassign {
                             st_stack->tables[st_stack->tables.size()-2]->insert(new_st_entry);
                             st_stack->tables[st_stack->tables.size()-2]->offset+=width;
                         }
-                        else if($1->name=="NAME")
+                        else if($1->title=="IDENTIFIER")
                         {
                             SymbolTableEntry* temp=curr_st->is_present(st);
                             new_st_entry->lexval=st;
@@ -491,7 +490,7 @@ expr_stmt   : testlist_star_expr annassign {
                             error("Only lvalue can be assigned.", $1->lineno);
                         }
 
-                        if($1 && $1->name == "NAME")
+                        if($1 && $1->title == "IDENTIFIER")
                         {
                             if($2->rvalue.size())
                                 tac.push_back(quad("=", $2->rvalue, "", $1->lexval, NAME_ASSIGNMENT));
@@ -603,7 +602,7 @@ expr_stmt   : testlist_star_expr annassign {
                         if($2)
                         {
                             convert($2->info->type, $1->info->type, $2->rvalue);
-                            if($1 && $1->name == "NAME")
+                            if($1 && $1->title == "IDENTIFIER")
                             {
                                 tac.push_back(quad("=", $2->rvalue, "", $1->lexval, NAME_ASSIGNMENT));
                             }
@@ -651,7 +650,7 @@ EQUAL_testlist_star_expr_kleene :EQUAL testlist_star_expr EQUAL_testlist_star_ex
                         else
                         {
                             convert($3->info->type, $2->info->type, $3->rvalue);
-                            if($2 && $2->name == "NAME")
+                            if($2 && $2->title == "IDENTIFIER")
                             {
                                 tac.push_back(quad("=", $3->rvalue, "", $2->lexval, NAME_ASSIGNMENT));
                             }
@@ -1056,12 +1055,12 @@ for_stmt    : FOR exprlist IN testlist COLON {curr_nesting_depth++; inside_loop=
                         }
                         string new_temp=new_temporary();
 
-                        if($2->name=="NAME")
+                        if($2->title=="IDENTIFIER")
                             tac.push_back(quad("=",start,"",$2->lvalue,NAME_ASSIGNMENT));
                         else
                             tac.push_back(quad("=",start,"",$2->lvalue,STORE));
 
-                        if($2->name=="NAME")
+                        if($2->title=="IDENTIFIER")
                             tac.push_back(quad("=", $2->lvalue,"",new_temp, NAME_ASSIGNMENT));
                         else
                             tac.push_back(quad("=", $2->lvalue,"",new_temp, LOAD));
@@ -1077,7 +1076,7 @@ for_stmt    : FOR exprlist IN testlist COLON {curr_nesting_depth++; inside_loop=
                         
                         $1->else_block_label=for_test_label;
                         tac.push_back(quad("+", new_temp,"1",new_temp, ARITH));
-                        if($2->name=="NAME")
+                        if($2->title=="IDENTIFIER")
                             tac.push_back(quad("=", new_temp,"",$2->lvalue,NAME_ASSIGNMENT));
                         else
                             tac.push_back(quad("=", new_temp,"",$2->lvalue,STORE));
@@ -1164,7 +1163,7 @@ suite   : simple_stmt   {$$=$1;}
 
 stmt_plus   : stmt_plus stmt {
 
-                if($1==NULL || $1->name!="stmts")
+                if($1==NULL || $1->title!="stmts")
                 {
                     Node* temp=$1;
                     $1=new Node(nodeID++, "stmts", yylineno);
@@ -1641,7 +1640,7 @@ atom_expr   : atom  {
                     temp_info->is_lvalue = $1->info->is_lvalue;
                     temp_info->trailer_type = $1->info->trailer_type;
                 }
-                if($1==NULL || $1->name!="atom_expr")
+                if($1==NULL || $1->title!="atom_expr")
                 {
                     $$=new Node(nodeID++, "atom_expr", yylineno);
                     $$->push_back($1);
@@ -1957,7 +1956,7 @@ atom_expr   : atom  {
                             }
                             if(candidates.size()==0)
                             {
-                                if($1->name=="NAME" && $1->lexval=="self" && st_stack->tables.size()>=2 && st_stack->tables[st_stack->tables.size()-2]->type==CLASS_ST && st_stack->tables[st_stack->tables.size()-1]->type==FUNCTION_ST && st_stack->tables[st_stack->tables.size()-1]->my_st_entry->lexval=="__init__")
+                                if($1->title=="IDENTIFIER" && $1->lexval=="self" && st_stack->tables.size()>=2 && st_stack->tables[st_stack->tables.size()-2]->type==CLASS_ST && st_stack->tables[st_stack->tables.size()-1]->type==FUNCTION_ST && st_stack->tables[st_stack->tables.size()-1]->my_st_entry->lexval=="__init__")
                                 {
                                     temp_info->type="!";
                                     temp_info->is_lvalue = $1->info->is_lvalue;

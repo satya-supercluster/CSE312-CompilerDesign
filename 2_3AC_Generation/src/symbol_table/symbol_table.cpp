@@ -1,8 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
-#include "symbol_table/symbol_table.h"
+#include "symbol_table.h"
 #include "../3ac/3ac.h"
-#include "type_utils/type_utils.h"
+#include "../type_utils/type_utils.h"
 extern SymbolTableStack *st_stack;
 extern SymbolTable *curr_st;
 extern void yyerror(string s);

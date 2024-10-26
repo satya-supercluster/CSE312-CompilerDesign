@@ -1,0 +1,7 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+col,NAME,Variable,int,70
+grid,NAME,Variable,list[list[int]],62
+l,NAME,Variable,list[int],63
+num,NAME,Variable,int,73
+row,NAME,Variable,int,69
+self,NAME,Variable,Solution,62

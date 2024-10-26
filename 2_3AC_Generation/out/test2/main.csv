@@ -1,0 +1,3 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+checking_acc,NAME,Variable,CheckingAccount,65
+savings_acc,NAME,Variable,SavingsAccount,56

@@ -1,0 +1,9 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+arr,NAME,Variable,list[int],8
+count,NAME,Variable,int,10
+end,NAME,Variable,int,8
+i,NAME,Variable,int,11
+j,NAME,Variable,int,21
+pivot,NAME,Variable,int,9
+pivotIndex,NAME,Variable,int,16
+start,NAME,Variable,int,8

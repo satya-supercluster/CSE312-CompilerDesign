@@ -1,0 +1,5 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+arr,NAME,Variable,list[list[int]],8
+i,NAME,Variable,int,9
+j,NAME,Variable,int,10
+self,NAME,Variable,Solution,8

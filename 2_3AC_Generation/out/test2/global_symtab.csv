@@ -1,0 +1,13 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+BankAccount,NAME,Class,,4
+CheckingAccount,NAME,Class,,40
+SavingsAccount,NAME,Class,,27
+__name__,NAME,Variable,str,0
+len,NAME,Function,(),0,int
+main,NAME,Function,(),54,None
+print,NAME,Function,(int),0,None
+print,NAME,Function,(str),0,None
+print,NAME,Function,(bool),0,None
+print,NAME,Function,(float),0,None
+range,NAME,Function,(int:int),0,range!!
+range,NAME,Function,(int),0,range!

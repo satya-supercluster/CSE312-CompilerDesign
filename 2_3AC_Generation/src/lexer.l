@@ -189,10 +189,6 @@ WHITE_SPACE                             [ \t\f\r]
         yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext); 
         return FALSE; 
 }
-"is"    { 
-        yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
-            return IS; 
-}
 
 "(" {  
         bracket_count++;
@@ -384,7 +380,7 @@ WHITE_SPACE                             [ \t\f\r]
 {DEC_INTEGER}|{BIN_INTEGER}|{OCT_INTEGER}|{HEX_INTEGER}   { 
 
                                         yylval.node = new Node(nodeID++, "NUMBER", yylineno, yytext);
-                                        return NUMBER; 
+                                        return INTEGER; 
 }
 
 {FLOAT_NUMBER}                                              {
@@ -394,7 +390,7 @@ WHITE_SPACE                             [ \t\f\r]
 
 {IMAGINARY_NO}                          {
                                         yylval.node = new Node(nodeID++, "NUMBER", yylineno, yytext);
-                                        return IMAGINARY_NUMBER;
+                                        return IMAGINARY_NO;
 }
 
 {NAMES}                             {

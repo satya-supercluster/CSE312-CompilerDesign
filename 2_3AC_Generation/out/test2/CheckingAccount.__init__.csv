@@ -1,0 +1,5 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+account_number,NAME,Variable,str,41
+balance,NAME,Variable,float,41
+overdraft_limit,NAME,Variable,float,41
+self,NAME,Variable,CheckingAccount,41

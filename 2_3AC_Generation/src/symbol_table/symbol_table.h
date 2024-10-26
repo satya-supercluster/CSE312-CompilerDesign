@@ -1,14 +1,14 @@
 #ifndef SYMBOL_TABLE_H
 #define SYMBOL_TABLE_H
 #include <bits/stdc++.h>
-
+class SymbolTableEntry;
 struct temp_type_info
 {
-    string type;
-    string type_min;
-    vector<string> args;
-    vector<string> args_min;
-    vector<SymbolTableEntry*> candidates;
+    std::string type;
+    std::string type_min;
+    std::vector<std::string> args;
+    std::vector<std::string> args_min;
+    std::vector<SymbolTableEntry*> candidates;
     int trailer_type;
     bool is_lvalue;
 };

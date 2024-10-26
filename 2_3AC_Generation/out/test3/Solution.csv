@@ -1,0 +1,10 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+SolveSudoku,NAME,Function,(Solution:list[list[int]]),62,bool
+__init__,NAME,Function,(Solution),5,None
+check_location_is_safe,NAME,Function,(Solution:list[list[int]]:int:int:int),47,bool
+find_empty_location,NAME,Function,(Solution:list[list[int]]:list[int]),50,bool
+name,NAME,Variable,str,6
+printGrid,NAME,Function,(Solution:list[list[int]]),8,None
+used_in_box,NAME,Function,(Solution:list[list[int]]:int:int:int),36,bool
+used_in_col,NAME,Function,(Solution:list[list[int]]:int:int),27,bool
+used_in_row,NAME,Function,(Solution:list[list[int]]:int:int),18,bool

@@ -1,0 +1,4 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+account_number,NAME,Variable,str,5
+balance,NAME,Variable,float,5
+self,NAME,Variable,BankAccount,5

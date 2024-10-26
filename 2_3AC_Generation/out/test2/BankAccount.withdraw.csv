@@ -1,0 +1,3 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+amount,NAME,Variable,float,15
+self,NAME,Variable,BankAccount,15

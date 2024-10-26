@@ -1,0 +1,5 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+account_number,NAME,Variable,str,28
+balance,NAME,Variable,float,28
+interest_rate,NAME,Variable,float,28
+self,NAME,Variable,SavingsAccount,28

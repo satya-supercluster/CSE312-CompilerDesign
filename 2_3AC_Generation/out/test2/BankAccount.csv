@@ -1,0 +1,7 @@
+Symbol Name,Token,Category,Type,Line Number,Return Type (for function)
+__init__,NAME,Function,(BankAccount:str:float),5,None
+account_number,NAME,Variable,str,6
+balance,NAME,Variable,float,7
+deposit,NAME,Function,(BankAccount:float),10,None
+display,NAME,Function,(BankAccount),23,None
+withdraw,NAME,Function,(BankAccount:float),15,None
