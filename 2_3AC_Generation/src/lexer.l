@@ -144,14 +144,6 @@ WHITE_SPACE                             [ \t\f\r]
         yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
         return GLOBAL; 
 }
-"nonlocal"  {
-        yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
-        return NONLOCAL; 
-}
-"assert"    { 
-        yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
-        return ASSERT; 
-}
 "class" { 
         yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
         return CLASS; 
@@ -200,11 +192,6 @@ WHITE_SPACE                             [ \t\f\r]
 "is"    { 
         yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
             return IS; 
-}
-
-"async" { 
-        yylval.node=new Node(nodeID++, "KEYWORD", yylineno, yytext);
-        return ASYNC; 
 }
 
 "(" {  
@@ -269,10 +256,6 @@ WHITE_SPACE                             [ \t\f\r]
         yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext);
         return MULTIPLY_EQUAL; 
 }
-"@="    { 
-        yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext);
-        return RATE_EQUAL; 
-}
 "/="    { 
         yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext);
         return DIVIDE_EQUAL; 
@@ -324,10 +307,6 @@ WHITE_SPACE                             [ \t\f\r]
 "*" { 
         yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext);
         return MULTIPLY; 
-}
-"@" { 
-        yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext);
-        return RATE; 
 }
 "/" { 
         yylval.node=new Node(nodeID++, "OPERATOR", yylineno, yytext);
@@ -402,10 +381,20 @@ WHITE_SPACE                             [ \t\f\r]
 }
 
 
-{DEC_INTEGER}|{BIN_INTEGER}|{OCT_INTEGER}|{HEX_INTEGER}|{FLOAT_NUMBER}|{IMAGINARY_NO}   { 
+{DEC_INTEGER}|{BIN_INTEGER}|{OCT_INTEGER}|{HEX_INTEGER}   { 
 
                                         yylval.node = new Node(nodeID++, "NUMBER", yylineno, yytext);
                                         return NUMBER; 
+}
+
+{FLOAT_NUMBER}                                              {
+                                        yylval.node = new Node(nodeID++, "NUMBER", yylineno, yytext);
+                                        return FLOAT_NUMBER;
+}
+
+{IMAGINARY_NO}                          {
+                                        yylval.node = new Node(nodeID++, "NUMBER", yylineno, yytext);
+                                        return IMAGINARY_NUMBER;
 }
 
 {NAMES}                             {
