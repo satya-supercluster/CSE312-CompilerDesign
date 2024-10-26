@@ -397,6 +397,9 @@ WHITE_SPACE                             [ \t\f\r]
         yylval.node = new Node(nodeID++, "OPERATOR", yylineno, yytext);
         return BITWISE_NOT; 
 }
+"__name__" {
+        return NAME__;
+}
 
 
 {DEC_INTEGER}|{BIN_INTEGER}|{OCT_INTEGER}|{HEX_INTEGER}|{FLOAT_NUMBER}|{IMAGINARY_NO}   { 
