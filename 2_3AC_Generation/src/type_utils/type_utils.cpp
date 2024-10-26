@@ -1,5 +1,5 @@
 using namespace std;
-// #include "type_utils.h"
+#include "type_utils.h"
 #include "../3ac/3ac.h"
 extern SymbolTableStack *st_stack;
 extern SymbolTable *curr_st;
